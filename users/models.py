@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-import json
-import datetime
 LANGUAGE_CHOICES = (
     ('en','English'),
     ('vi', 'Vietnamese'),
@@ -12,6 +10,12 @@ DIFFICULTY_CHOICES = (
     ('ADVANCED','Advanced')
 )
 # Create your models here.
+class Project(models.Model):
+    checklist_items = models.JSONField()
+class ProjectProgress(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete= models.CASCADE)
+    completed_items = models.JSONField()
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User,
@@ -46,6 +50,16 @@ class UserProfile(models.Model):
     email_notification = models.BooleanField(
         default = True
     )
+    avatar = models.URLField(blank=True, null=True)
+    bio = models.TextField(max_length=500, blank=True)
+    github_username = models.CharField(max_length=100, blank=True)
+    total_projects = models.IntegerField(default=0)
+    completed_projects = models.IntegerField(default=0)
+    current_streak = models.IntegerField(default=0)
+    total_points = models.IntegerField(default=0)
+    current_level = models.CharField(max_length=20, default='BEGINNER')
+    learning_goals = models.CharField(max_length=20, blank=True)
+    target_daily_hours = models.IntegerField(default=1)
     class Meta:
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
